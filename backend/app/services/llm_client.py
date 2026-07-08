@@ -180,7 +180,8 @@ class LLMClient:
         self,
         query: str,
         context_chunks: list[dict],
-        mode: str = "efficiency"
+        mode: str = "efficiency",
+        detailed: bool = False
     ) -> dict:
         """
         Generate study content from retrieved context chunks.
@@ -200,6 +201,18 @@ class LLMClient:
 
         # Select the appropriate system prompt for the mode
         system_prompt = SYSTEM_PROMPTS.get(mode, SYSTEM_PROMPTS["efficiency"])
+        
+        if detailed:
+            system_prompt += (
+                "\n\nDETAILED MODE ENABLED: For EVERY section in your JSON response (the main answer, "
+                "the concepts, the tips, etc.), provide highly detailed, multi-paragraph explanations with examples. "
+                "Do not be brief. Expand extensively.\n\n"
+                "CRITICAL JSON FORMATTING RULES:\n"
+                "1. You MUST output a completely valid JSON object.\n"
+                "2. Do NOT use literal newlines inside JSON string values. You MUST use the `\\n` escape sequence for line breaks.\n"
+                "3. You MUST enclose all string values (like the 'answer' field) in double quotes.\n"
+                "4. Escape any internal double quotes using `\\\"`."
+            )
 
         try:
             response = client.chat.completions.create(
@@ -210,7 +223,7 @@ class LLMClient:
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.1,  # Low temperature for factual accuracy
-                max_tokens=2000,
+                max_tokens=6000,
                 top_p=0.9
             )
 

@@ -10,11 +10,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { useStudyMode } from '@/hooks/useStudyMode';
 import { generateFlashcards, generateQuiz } from '@/lib/api';
 import type { FlashCard, QuizQuestion } from '@/types';
+import CourseSelector from '@/components/CourseSelector';
 
 export default function RecallPage() {
   const { isAuthenticated, loading: authLoading } = useAuth();
+  const { mode, config, setMode } = useStudyMode();
   const router = useRouter();
   const searchParams = useSearchParams();
   const courseId = searchParams.get('course');
@@ -55,7 +58,7 @@ export default function RecallPage() {
         const result = await generateFlashcards({
           course_id: courseId,
           query: topic,
-          mode: 'efficiency',
+          mode,
         });
         setCards(result.flashcards?.map((f: Omit<FlashCard, 'id'>, i: number) => ({ ...f, id: String(i) })) || []);
         setCurrentCard(0);
@@ -64,7 +67,7 @@ export default function RecallPage() {
         const result = await generateQuiz({
           course_id: courseId,
           query: topic,
-          mode: 'efficiency',
+          mode,
         });
         setQuestions(result.questions?.map((q: Omit<QuizQuestion, 'id'>, i: number) => ({ ...q, id: String(i) })) || []);
         setCurrentQ(0);
@@ -118,9 +121,30 @@ export default function RecallPage() {
       <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) var(--space-2xl)', borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)' }}>
         <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.25rem' }}>←</button>
         <h1 style={{ fontSize: '1.1rem', fontWeight: 600 }}>🧠 Active Recall Arena</h1>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--space-lg)' }}>
+          <CourseSelector />
+          <div style={{ display: 'flex', gap: 'var(--space-xs)' }}>
+            {(['deep_dive', 'efficiency', 'panic'] as const).map(m => {
+            const modeColor = m === 'panic' ? 'var(--accent-danger)' : m === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)';
+            return (
+              <button key={m} onClick={() => setMode(m)} style={{ padding: '0.3rem 0.7rem', fontSize: '0.75rem', fontWeight: 600, borderRadius: 'var(--radius-md)', border: `1px solid ${mode === m ? modeColor : 'var(--border-subtle)'}`, background: mode === m ? `hsla(${m === 'panic' ? '0,60%,55%' : m === 'efficiency' ? '40,80%,60%' : '200,80%,60%'},0.1)` : 'transparent', color: mode === m ? modeColor : 'var(--text-tertiary)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                {m === 'deep_dive' ? '🔬 Deep Dive' : m === 'efficiency' ? '⚡ 80/20' : '🚨 Panic'}
+              </button>
+            );
+          })}
+          </div>
+        </div>
       </header>
 
       <main style={{ maxWidth: '800px', margin: '0 auto', padding: 'var(--space-2xl)' }}>
+        {/* Mode guidance */}
+        <div style={{ padding: 'var(--space-sm) var(--space-md)', background: mode === 'panic' ? 'hsla(0,60%,55%,0.08)' : mode === 'efficiency' ? 'hsla(40,80%,60%,0.08)' : 'hsla(200,80%,60%,0.08)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-xl)', fontSize: '0.82rem', color: 'var(--text-secondary)', border: `1px solid ${mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)'}` }}>
+          <span style={{ fontWeight: 700, color: mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)' }}>{config.icon} {config.label}:</span>{' '}
+          {mode === 'panic' ? 'Flashcards and quizzes focus on the highest-priority exam topics from your past papers.' :
+           mode === 'efficiency' ? 'Questions focus on high-yield topics — the 20% that covers 80% of exam marks.' :
+           'Deep-dive flashcards cover all concepts with full explanations and cross-topic connections.'}
+        </div>
+
         {/* Tab Selector */}
         <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-xl)' }}>
           <button className={`mode-btn ${activeTab === 'flashcards' ? 'active' : ''}`} onClick={() => setActiveTab('flashcards')}>
@@ -139,7 +163,11 @@ export default function RecallPage() {
               value={topic}
               onChange={e => setTopic(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleGenerate()}
-              placeholder="Enter a topic (e.g., Binary Search Trees, Sorting Algorithms)"
+              placeholder={
+                mode === 'panic' ? 'Enter topic to drill (e.g., Key Definitions, Top Formulas)' :
+                mode === 'efficiency' ? 'Enter high-yield topic (e.g., Sorting, Normalization)' :
+                'Enter topic to explore deeply (e.g., Binary Search Trees)'
+              }
               disabled={loading}
             />
             <button className="btn-primary" onClick={handleGenerate} disabled={loading || !topic.trim() || !courseId} style={{ whiteSpace: 'nowrap' }}>

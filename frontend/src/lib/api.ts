@@ -73,6 +73,44 @@ async function apiFetch<T>(
   return response.json();
 }
 
+// Simple in-memory cache to prevent redundant fetches on page navigation
+const globalCache = new Map<string, { data: any, timestamp: number, promise?: Promise<any> }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+export async function fetchWithCache<T>(key: string, fetcher: () => Promise<T>, forceRefresh = false): Promise<T> {
+  const now = Date.now();
+  if (!forceRefresh && globalCache.has(key)) {
+    const entry = globalCache.get(key)!;
+    if (now - entry.timestamp < CACHE_TTL) {
+      if (entry.promise) return entry.promise;
+      return entry.data as T;
+    }
+  }
+
+  const promise = fetcher().then(data => {
+    globalCache.set(key, { data, timestamp: Date.now() });
+    return data;
+  }).catch(err => {
+    globalCache.delete(key);
+    throw err;
+  });
+
+  globalCache.set(key, { data: null, timestamp: now, promise });
+  return promise;
+}
+
+export function invalidateCache(keyPrefix?: string) {
+  if (!keyPrefix) {
+    globalCache.clear();
+    return;
+  }
+  for (const key of globalCache.keys()) {
+    if (key.startsWith(keyPrefix)) {
+      globalCache.delete(key);
+    }
+  }
+}
+
 // ============================================================
 // Upload API
 // ============================================================
@@ -93,10 +131,13 @@ export async function uploadDocument(
   if (university) formData.append('university', university);
   if (examYear) formData.append('exam_year', String(examYear));
 
-  return apiFetch<UploadResponse>('/api/upload/', {
+  const result = await apiFetch<UploadResponse>('/api/upload/', {
     method: 'POST',
     body: formData,
   });
+  
+  invalidateCache(); // Clear cache so new courses/documents appear
+  return result;
 }
 
 export async function getProcessingStatus(documentId: string) {
@@ -105,9 +146,12 @@ export async function getProcessingStatus(documentId: string) {
   );
 }
 
-export async function listCourses() {
-  return apiFetch<Array<{ id: string; name: string; code?: string; documents: { count: number }[] }>>(
-    '/api/upload/courses'
+export async function listCourses(forceRefresh = false) {
+  return fetchWithCache('/api/upload/courses', () => 
+    apiFetch<Array<{ id: string; name: string; code?: string; documents: { count: number }[] }>>(
+      '/api/upload/courses'
+    ),
+    forceRefresh
   );
 }
 
@@ -124,9 +168,11 @@ export async function getCourseDocuments(courseId: string) {
 }
 
 export async function deleteDocument(documentId: string) {
-  return apiFetch<{ message: string }>(`/api/upload/documents/${documentId}`, {
+  const result = await apiFetch<{ message: string }>(`/api/upload/documents/${documentId}`, {
     method: 'DELETE',
   });
+  invalidateCache(); // Clear cache so document lists update
+  return result;
 }
 
 export async function reanalyzeDocument(documentId: string) {
@@ -139,22 +185,32 @@ export async function reanalyzeDocument(documentId: string) {
 // Analysis API
 // ============================================================
 
-export async function getTopicFrequencies(courseId: string): Promise<AnalysisResponse> {
-  return apiFetch<AnalysisResponse>(`/api/analysis/${courseId}/frequencies`);
+export async function getTopicFrequencies(courseId: string, forceRefresh = false): Promise<AnalysisResponse> {
+  return fetchWithCache(`/api/analysis/${courseId}/frequencies`, () =>
+    apiFetch<AnalysisResponse>(`/api/analysis/${courseId}/frequencies`),
+    forceRefresh
+  );
 }
 
-export async function getModuleWeightage(courseId: string) {
-  return apiFetch<{ course_id: string; modules: Array<import('@/types').ModuleWeightage> }>(
-    `/api/analysis/${courseId}/weightage`
+export async function getModuleWeightage(courseId: string, forceRefresh = false) {
+  return fetchWithCache(`/api/analysis/${courseId}/weightage`, () =>
+    apiFetch<{ course_id: string; modules: Array<import('@/types').ModuleWeightage> }>(
+      `/api/analysis/${courseId}/weightage`
+    ),
+    forceRefresh
   );
 }
 
 export async function getHighYieldTopics(
   courseId: string,
-  threshold: number = 80
+  threshold: number = 80,
+  forceRefresh = false
 ): Promise<HighYieldResponse> {
-  return apiFetch<HighYieldResponse>(
-    `/api/analysis/${courseId}/high-yield?threshold=${threshold}`
+  return fetchWithCache(`/api/analysis/${courseId}/high-yield?threshold=${threshold}`, () =>
+    apiFetch<HighYieldResponse>(
+      `/api/analysis/${courseId}/high-yield?threshold=${threshold}`
+    ),
+    forceRefresh
   );
 }
 
@@ -184,6 +240,20 @@ export async function generateFlashcards(query: SearchQuery) {
 
 export async function generateQuiz(query: SearchQuery) {
   return apiFetch<{ questions: Array<import('@/types').QuizQuestion> }>('/api/search/quiz', {
+    method: 'POST',
+    body: JSON.stringify(query),
+  });
+}
+
+export async function generateCheatsheet(query: SearchQuery) {
+  return apiFetch<{
+    topic: string;
+    cheatsheet: string;
+    essential_definitions: Array<{ term: string; definition: string }>;
+    essential_formulas: string[];
+    quick_tips: string[];
+    confidence: number;
+  }>('/api/search/cheatsheet', {
     method: 'POST',
     body: JSON.stringify(query),
   });

@@ -274,6 +274,26 @@ export default function DashboardPage() {
                 Flashcards & quizzes
               </div>
             </button>
+
+            <button
+              className="glass-card card-hover"
+              onClick={() => courses.length > 0 && router.push(`/ask?course=${courses[0]?.id}`)}
+              style={{
+                padding: 'var(--space-xl)',
+                textAlign: 'left',
+                border: 'none',
+                cursor: 'pointer',
+                background: 'var(--glass-bg)',
+                opacity: courses.length === 0 ? 0.5 : 1,
+                borderLeft: `3px solid ${mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)'}`,
+              }}
+            >
+              <div style={{ fontSize: '2rem', marginBottom: 'var(--space-sm)' }}>🤖</div>
+              <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Ask AI</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
+                Query your documents
+              </div>
+            </button>
           </div>
         </section>
 

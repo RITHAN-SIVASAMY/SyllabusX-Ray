@@ -24,7 +24,7 @@ The schedule also factors in:
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from app.services.frequency_engine import get_frequency_engine
 
@@ -58,31 +58,14 @@ class StudyPlanner:
             course_id: Course to generate schedule for
             exam_date: When is the exam?
             hours_per_day: Available study hours per day
-            mode: Study mode affects which topics are included
-        
-        Returns:
-            {
-                "course_id": str,
-                "exam_date": str,
-                "total_days": int,
-                "total_hours": float,
-                "schedule": [
-                    {
-                        "date": "2024-01-15",
-                        "topics": ["Module 3: Sorting", ...],
-                        "hours_allocated": 4.0,
-                        "priority": "high",
-                        "is_review": false,
-                        "notes": "Focus on comparison-based sorting algorithms"
-                    },
-                    ...
-                ]
-            }
+            mode: Study mode — controls topic filtering and day strategies
         """
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
+        if exam_date.tzinfo is None:
+            exam_date = exam_date.replace(tzinfo=timezone.utc)
         
         # Calculate available time
-        days_remaining = (exam_date - now).days
+        days_remaining = (exam_date.date() - now.date()).days
         if days_remaining <= 0:
             return {
                 "course_id": course_id,
@@ -124,17 +107,19 @@ class StudyPlanner:
         # Distribute across days
         schedule = self._distribute_across_days(
             allocations, days_remaining, hours_per_day,
-            now, review_hours
+            now, review_hours, mode
         )
 
         return {
             "course_id": course_id,
             "exam_date": exam_date.isoformat(),
-            "total_days": days_remaining,
-            "total_hours": round(total_hours, 1),
-            "study_hours": round(study_hours, 1),
-            "review_hours": round(review_hours, 1),
-            "topics_covered": len(allocations),
+            "total_days": int(days_remaining),
+            "total_hours": float(total_hours),
+            "study_hours": float(total_hours - review_hours),
+            "review_hours": float(review_hours),
+            "topics_covered": int(len(allocations)),
+            "mode": mode,
+            "mode_summary": self._get_mode_summary(mode, days_remaining),
             "schedule": schedule,
         }
 
@@ -159,8 +144,8 @@ class StudyPlanner:
             for topic in topics:
                 allocations.append({
                     "topic_name": topic["topic_name"],
-                    "hours": round(per_topic, 1),
-                    "weightage_percent": round(100 / max(len(topics), 1), 1),
+                    "hours": float(round(per_topic, 1)),
+                    "weightage_percent": float(round(100 / max(len(topics), 1), 1)),
                     "trend": topic.get("trend", "stable"),
                     "priority": "medium"
                 })
@@ -191,13 +176,97 @@ class StudyPlanner:
 
             allocations.append({
                 "topic_name": topic["topic_name"],
-                "hours": round(final_hours, 1),
-                "weightage_percent": round(weight, 1),
+                "hours": float(round(final_hours, 1)),
+                "weightage_percent": float(round(weight, 1)),
                 "trend": topic.get("trend", "stable"),
                 "priority": priority
             })
 
         return allocations
+
+    def _get_mode_summary(self, mode: str, days: int) -> dict:
+        """Return a human-readable summary of what the mode means for this schedule."""
+        if mode == "panic":
+            return {
+                "label": "🚨 Panic Mode",
+                "description": "Only the highest-yield topics are scheduled. Focus on definitions, formulas, and past exam answers.",
+                "session_strategy": "Short 25-min Pomodoro bursts. Skip derivations — memorize key results.",
+                "color": "danger"
+            }
+        elif mode == "efficiency":
+            return {
+                "label": "⚡ 80/20 Efficiency",
+                "description": "Topics covering 90% of historical marks are prioritized. Secondary topics are excluded.",
+                "session_strategy": "45-min focused blocks with 10-min breaks. Prioritize high-weightage topics each day.",
+                "color": "warning"
+            }
+        else:  # deep_dive
+            return {
+                "label": "🔬 Deep Dive",
+                "description": "Comprehensive coverage of all topics. Full explanations, examples, and cross-topic connections.",
+                "session_strategy": "90-min deep work sessions. Review previous day's material for 15 min before starting.",
+                "color": "primary"
+            }
+
+    def _get_mode_day_config(self, mode: str, day_number: int, priority: str, is_review: bool) -> dict:
+        """Return mode-specific tips and theme for a specific day."""
+        if mode == "panic":
+            if is_review:
+                return {
+                    "day_theme": "🚨 Rapid Review",
+                    "mode_tips": "Quick-scan your notes. Write down 3 key facts per topic from memory.",
+                    "session_strategy": "2 × 25-min sprints with 5-min breaks. Use active recall — test yourself."
+                }
+            elif priority == "high":
+                return {
+                    "day_theme": "🔥 High-Yield Blitz",
+                    "mode_tips": "These are the most exam-critical topics. Memorize formulas and key definitions first.",
+                    "session_strategy": "25-min Pomodoro blocks. After each block, close your notes and recall 3 facts."
+                }
+            else:
+                return {
+                    "day_theme": "⚡ Quick Coverage",
+                    "mode_tips": "Cover these briefly — focus on what appeared in past papers, skip deep explanations.",
+                    "session_strategy": "Single 25-min sprint per topic. Move on even if not fully comfortable."
+                }
+        elif mode == "efficiency":
+            if is_review:
+                return {
+                    "day_theme": "📊 Strategic Review",
+                    "mode_tips": "Revisit high-yield topics from earlier days. Practice solving past paper questions.",
+                    "session_strategy": "45-min block: 20 min review, 15 min practice questions, 10 min self-assessment."
+                }
+            elif priority == "high":
+                return {
+                    "day_theme": "⚡ Priority Focus",
+                    "mode_tips": "High-weightage topic — allocate most energy here. Understand the core concept deeply.",
+                    "session_strategy": "Two 45-min focused blocks. After each, summarize the key points in your own words."
+                }
+            else:
+                return {
+                    "day_theme": "📈 Steady Progress",
+                    "mode_tips": "Medium priority — cover key ideas and practice 1-2 past questions per topic.",
+                    "session_strategy": "45-min block per topic. Use active recall at the end of each session."
+                }
+        else:  # deep_dive
+            if is_review:
+                return {
+                    "day_theme": "🔬 Deep Review",
+                    "mode_tips": "Revisit all topics covered so far. Connect concepts across modules and build a mental map.",
+                    "session_strategy": "90-min session: review notes → create concept connections → practice applications."
+                }
+            elif priority == "high":
+                return {
+                    "day_theme": "📚 Comprehensive Study",
+                    "mode_tips": "Core topic — study all subtopics, examples, and edge cases. Cross-reference with related modules.",
+                    "session_strategy": "90-min deep work blocks. Read, summarize, then solve progressively harder problems."
+                }
+            else:
+                return {
+                    "day_theme": "🌱 Broadening Coverage",
+                    "mode_tips": "Supporting topic — understand how it connects to your high-priority modules.",
+                    "session_strategy": "60-min exploration. Focus on understanding principles, not just memorizing facts."
+                }
 
     def _distribute_across_days(
         self,
@@ -205,16 +274,11 @@ class StudyPlanner:
         total_days: int,
         hours_per_day: float,
         start_date: datetime,
-        review_hours: float
+        review_hours: float,
+        mode: str = "efficiency"
     ) -> list[dict]:
         """
-        Spread topic allocations across available days.
-        
-        Strategy:
-        1. High-priority topics come first (when focus is freshest)
-        2. Each day fills up to hours_per_day
-        3. Review sessions are interspersed every 3 days
-        4. The last day is always a review/revision day
+        Spread topic allocations across available days with mode-specific enrichment.
         """
         # Sort by priority (high first) then by hours (most time needed first)
         priority_order = {"high": 0, "medium": 1, "low": 2}
@@ -235,12 +299,13 @@ class StudyPlanner:
                 if remaining_today <= 0:
                     # Save today's schedule and move to next day
                     if today_topics:
+                        day_priority = min(today_topics, key=lambda t: priority_order.get(t["priority"], 2))["priority"]
                         schedule.append({
                             "date": (start_date + timedelta(days=current_day + 1)).strftime("%Y-%m-%d"),
                             "day_number": current_day + 1,
                             "topics": [t["name"] for t in today_topics],
-                            "hours_allocated": round(sum(t["hours"] for t in today_topics), 1),
-                            "priority": max(t["priority"] for t in today_topics),
+                            "hours_allocated": float(round(sum(t["hours"] for t in today_topics), 1)),
+                            "priority": day_priority,
                             "is_review": False,
                             "details": today_topics
                         })
@@ -255,9 +320,10 @@ class StudyPlanner:
                 chunk = min(hours_left, remaining_today)
                 today_topics.append({
                     "name": alloc["topic_name"],
-                    "hours": round(chunk, 1),
+                    "hours": float(round(chunk, 1)),
                     "priority": alloc["priority"],
-                    "trend": alloc["trend"]
+                    "trend": alloc["trend"],
+                    "weightage_percent": float(alloc.get("weightage_percent", 0))
                 })
                 
                 hours_left -= chunk
@@ -268,12 +334,13 @@ class StudyPlanner:
 
         # Save the last day's topics
         if today_topics:
+            day_priority = min(today_topics, key=lambda t: priority_order.get(t["priority"], 2))["priority"]
             schedule.append({
                 "date": (start_date + timedelta(days=current_day + 1)).strftime("%Y-%m-%d"),
                 "day_number": current_day + 1,
                 "topics": [t["name"] for t in today_topics],
-                "hours_allocated": round(sum(t["hours"] for t in today_topics), 1),
-                "priority": max(t["priority"] for t in today_topics) if today_topics else "low",
+                "hours_allocated": float(round(sum(t["hours"] for t in today_topics), 1)),
+                "priority": day_priority if today_topics else "low",
                 "is_review": False,
                 "details": today_topics
             })
@@ -281,12 +348,22 @@ class StudyPlanner:
         # Add review days every 3rd day and on the last day
         review_per_session = review_hours / max(total_days // 3, 1)
         for i in range(len(schedule)):
-            if (i + 1) % 3 == 0 or i == len(schedule) - 1:
+            is_review = (i + 1) % 3 == 0 or i == len(schedule) - 1
+            if is_review:
                 schedule[i]["is_review"] = True
                 schedule[i]["topics"].append("📖 Review & Practice")
                 schedule[i]["hours_allocated"] = round(
                     schedule[i]["hours_allocated"] + review_per_session, 1
                 )
+
+            # Enrich each day with mode-specific tips
+            day_config = self._get_mode_day_config(
+                mode=mode,
+                day_number=schedule[i]["day_number"],
+                priority=schedule[i]["priority"],
+                is_review=schedule[i]["is_review"]
+            )
+            schedule[i].update(day_config)
 
         return schedule
 

@@ -70,6 +70,7 @@ class SearchQuery(BaseModel):
                        description="The student's question")
     mode: StudyMode = Field(default=StudyMode.EFFICIENCY,
                             description="Controls response depth and filtering")
+    detailed: bool = Field(default=False, description="Generate highly detailed, multi-paragraph explanations")
     top_k: int = Field(default=5, ge=1, le=20,
                        description="Number of final context chunks to use")
 
@@ -147,14 +148,21 @@ class SearchResponse(BaseModel):
     answer: str  # LLM-generated answer
     source_chunks: list[dict]  # The context chunks used
     confidence_score: float = Field(..., ge=0, le=1)
+    llm_extras: Optional[dict] = None  # Mode-specific structured data (key_concepts, must_know, etc.)
 
 
 class ScheduleDay(BaseModel):
     """A single day in the generated study schedule."""
     date: str
+    day_number: Optional[int] = None
     topics: list[str]
     hours_allocated: float
     priority: str  # "high", "medium", "low"
+    is_review: bool = False
+    mode_tips: Optional[str] = None       # Mode-specific study tip for the day
+    session_strategy: Optional[str] = None  # e.g. "Pomodoro 25/5" or "Deep 90-min blocks"
+    day_theme: Optional[str] = None        # e.g. "🚨 Survival Day" or "🔬 Deep Study"
+    details: Optional[list[dict]] = None  # Per-topic breakdown
 
 
 class SchedulerResponse(BaseModel):
@@ -191,4 +199,5 @@ class QuizQuestion(BaseModel):
     correct_index: int
     explanation: str
     topic: str
+    difficulty: Optional[str] = None  # "easy", "medium", "hard"
     marks: Optional[int] = None

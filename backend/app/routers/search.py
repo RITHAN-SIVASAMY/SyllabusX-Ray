@@ -83,7 +83,8 @@ async def search_course_materials(
     llm_response = await llm.generate_study_content(
         query=query.query,
         context_chunks=reranked,
-        mode=query.mode.value
+        mode=query.mode.value,
+        detailed=query.detailed
     )
 
     # Step 6: Build response
@@ -100,12 +101,16 @@ async def search_course_materials(
             "rank": chunk.get("rank", 0)
         })
 
+    # Build llm_extras from the full LLM response (mode-specific fields)
+    llm_extras = {k: v for k, v in llm_response.items() if k not in ("answer", "confidence", "error")}
+
     return SearchResponse(
         query=query.query,
         mode=query.mode,
         answer=answer,
         source_chunks=clean_sources,
-        confidence_score=confidence
+        confidence_score=confidence,
+        llm_extras=llm_extras if llm_extras else None
     )
 
 
@@ -184,3 +189,54 @@ async def generate_quiz(
     quiz = await llm.generate_quiz(reranked)
     
     return quiz
+
+
+@router.post("/cheatsheet")
+@limiter.limit("10/minute")
+async def generate_cheatsheet(
+    request: Request,
+    query: SearchQuery,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Generate a Panic Mode ultra-compact cheat sheet from course materials.
+    Contains only the most critical formulas, definitions, and key facts.
+    """
+    supabase = get_supabase_admin_client()
+    course = supabase.table("courses").select("id").eq(
+        "id", query.course_id
+    ).eq("user_id", user["sub"]).execute()
+    
+    if not course.data:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    search_service = get_hybrid_search_service()
+    search_results = await search_service.search(
+        query=query.query or "important formulas definitions key concepts",
+        course_id=query.course_id,
+        top_k=30
+    )
+
+    reranker = get_reranker_service()
+    reranked = await reranker.rerank(
+        query=query.query or "important formulas definitions key concepts",
+        results=search_results,
+        top_k=15  # More context for cheat sheet
+    )
+
+    llm = get_llm_client()
+    # Force panic mode for cheatsheet
+    cheatsheet = await llm.generate_study_content(
+        query=query.query or "Generate a comprehensive cheat sheet with all key formulas, definitions, and must-know facts",
+        context_chunks=reranked,
+        mode="panic"
+    )
+    
+    return {
+        "topic": query.query,
+        "cheatsheet": cheatsheet.get("answer", ""),
+        "essential_definitions": cheatsheet.get("essential_definitions", []),
+        "essential_formulas": cheatsheet.get("essential_formulas", []),
+        "quick_tips": cheatsheet.get("quick_tips", []),
+        "confidence": cheatsheet.get("confidence", 0.5)
+    }

@@ -128,8 +128,8 @@ class RerankerService:
                     "id": item["id"],
                     "content": item["text"],
                     "metadata": original_meta.get("metadata", {}),
-                    "rerank_score": item.get("score", 0),
-                    "original_score": original_meta.get("original_score", 0),
+                    "rerank_score": float(item.get("score", 0)),
+                    "original_score": float(original_meta.get("original_score", 0)),
                     "rank": i + 1
                 })
 

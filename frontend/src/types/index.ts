@@ -75,7 +75,8 @@ export interface UploadRequest {
 export interface SearchQuery {
   course_id: string;
   query: string;
-  mode: StudyMode;
+  mode?: StudyMode;
+  detailed?: boolean;
   top_k?: number;
 }
 
@@ -111,6 +112,21 @@ export interface SearchResponse {
   answer: string;
   source_chunks: SourceChunk[];
   confidence_score: number;
+  // Mode-specific structured extras from the LLM
+  llm_extras?: {
+    // deep_dive extras
+    key_concepts?: string[];
+    formulas?: string[];
+    exam_tips?: string[];
+    // efficiency extras
+    must_know?: string[];
+    key_formulas?: string[];
+    likely_questions?: string[];
+    // panic extras
+    essential_definitions?: Array<{ term: string; definition: string }>;
+    essential_formulas?: string[];
+    quick_tips?: string[];
+  };
 }
 
 export interface SourceChunk {
@@ -153,6 +169,10 @@ export interface ScheduleDay {
   priority: Priority;
   is_review: boolean;
   details: ScheduleTopicDetail[];
+  // Mode-specific enrichment from the backend
+  day_theme?: string;
+  mode_tips?: string;
+  session_strategy?: string;
 }
 
 export interface ScheduleTopicDetail {
@@ -171,6 +191,13 @@ export interface SchedulerResponse {
   study_hours: number;
   review_hours: number;
   topics_covered: number;
+  mode: string;
+  mode_summary?: {
+    label: string;
+    description: string;
+    session_strategy: string;
+    color: 'danger' | 'warning' | 'primary';
+  };
   schedule: ScheduleDay[];
 }
 

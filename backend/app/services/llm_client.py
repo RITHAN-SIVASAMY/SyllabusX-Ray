@@ -126,8 +126,9 @@ RULES:
 - Create 5-10 flashcards from the provided context
 - Mix difficulty levels
 - Focus on concepts frequently tested in past exams
-- Questions should test understanding, not just recall
-- Keep answers brief but complete"""
+- CRITICAL: Questions MUST be completely self-contained. Always provide the specific context (e.g., "In the context of Matrix Chain Multiplication..." rather than just "What is the algorithm..."). Do NOT assume the student knows which section you are testing.
+- CRITICAL: Answers must explain the actual concept. NEVER use phrases like "as given in the course material" or "mentioned in the text".
+- Keep answers brief but educational and complete"""
 
 # Prompt for generating quiz questions
 QUIZ_PROMPT = """You are SyllabusX-Ray's quiz generator.
@@ -152,6 +153,8 @@ RULES:
 - Each must have exactly 4 options
 - Only ONE correct answer per question
 - Distractors should be plausible but clearly wrong
+- CRITICAL: The question text MUST be completely self-contained. Always specify the exact algorithm, model, or topic being tested (e.g., "What is the time complexity of the Brute Force algorithm for Matrix Chain Multiplication?"). Do NOT write vague questions.
+- CRITICAL: The explanation MUST teach the student why the answer is correct using the underlying concepts. NEVER say "because it is in the course material" or "as stated in the text".
 - Base questions on actual past exam patterns when possible"""
 
 

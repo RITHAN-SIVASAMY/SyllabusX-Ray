@@ -67,6 +67,10 @@ function RecallPageContent() {
         });
         
         const newCards = result.flashcards || [];
+        if (newCards.length === 0) {
+          setError(`No relevant information found in your course materials for "${topic}". Try a topic that is covered in your syllabus.`);
+          return;
+        }
         setCards(newCards.map((f: Omit<FlashCard, 'id'>, i: number) => ({ ...f, id: String(i) })));
         setCurrentCard(0);
         setFlipped(false);
@@ -84,6 +88,10 @@ function RecallPageContent() {
         });
         
         const newQs = result.questions || [];
+        if (newQs.length === 0) {
+          setError(`No relevant information found in your course materials for "${topic}". Try a topic that is covered in your syllabus.`);
+          return;
+        }
         setQuestions(newQs.map((q: Omit<QuizQuestion, 'id'>, i: number) => ({ ...q, id: String(i) })));
         setCurrentQ(0);
         setSelectedAnswer(null);

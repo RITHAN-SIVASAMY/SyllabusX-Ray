@@ -252,7 +252,7 @@ class LLMClient:
                 "error": str(e)
             }
 
-    async def generate_flashcards(self, context_chunks: list[dict], avoid_questions: Optional[list[str]] = None) -> dict:
+    async def generate_flashcards(self, topic: str, context_chunks: list[dict], avoid_questions: Optional[list[str]] = None) -> dict:
         """Generate flashcards from context chunks."""
         client = self._get_client()
         context = self._format_context(context_chunks)
@@ -269,7 +269,7 @@ class LLMClient:
                 model=self._settings.groq_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"## Course material context:\n\n{context}"}
+                    {"role": "user", "content": f"## Requested Topic to Focus On:\n{topic}\n\n## Course material context:\n\n{context}"}
                 ],
                 response_format={"type": "json_object"},
                 temperature=temperature,
@@ -282,7 +282,7 @@ class LLMClient:
             logger.error(f"Flashcard generation failed: {e}")
             return {"flashcards": [], "error": str(e)}
 
-    async def generate_quiz(self, context_chunks: list[dict], avoid_questions: Optional[list[str]] = None) -> dict:
+    async def generate_quiz(self, topic: str, context_chunks: list[dict], avoid_questions: Optional[list[str]] = None) -> dict:
         """Generate quiz questions from context chunks."""
         client = self._get_client()
         context = self._format_context(context_chunks)
@@ -299,7 +299,7 @@ class LLMClient:
                 model=self._settings.groq_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"## Course material context:\n\n{context}"}
+                    {"role": "user", "content": f"## Requested Topic to Focus On:\n{topic}\n\n## Course material context:\n\n{context}"}
                 ],
                 response_format={"type": "json_object"},
                 temperature=temperature,

@@ -148,7 +148,7 @@ async def generate_flashcards(
     )
 
     llm = get_llm_client()
-    flashcards = await llm.generate_flashcards(reranked, avoid_questions=query.avoid_questions)
+    flashcards = await llm.generate_flashcards(query.query, reranked, avoid_questions=query.avoid_questions)
     
     return flashcards
 
@@ -186,7 +186,7 @@ async def generate_quiz(
     )
 
     llm = get_llm_client()
-    quiz = await llm.generate_quiz(reranked, avoid_questions=query.avoid_questions)
+    quiz = await llm.generate_quiz(query.query, reranked, avoid_questions=query.avoid_questions)
     
     return quiz
 

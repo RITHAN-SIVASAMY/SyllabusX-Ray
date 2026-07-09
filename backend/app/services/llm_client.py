@@ -111,8 +111,8 @@ FLASHCARD_PROMPT = """You are SyllabusX-Ray's flashcard generator.
 Create study flashcards from the provided course material context.
 
 CRITICAL REQUIREMENT:
-The user will provide a "Requested Topic to Focus On". You MUST ONLY generate flashcards about this specific topic.
-If the course material contains other unrelated topics, IGNORE THEM COMPLETELY.
+The user will provide a "Requested Topic to Focus On". You MUST ONLY generate flashcards about this specific topic based on the provided text.
+If the provided course material DOES NOT contain any information about the requested topic, you MUST return an empty list `[]` for "flashcards". DO NOT generate flashcards about unrelated topics present in the text.
 
 Generate a JSON object with an array of flashcards:
 {
@@ -127,7 +127,8 @@ Generate a JSON object with an array of flashcards:
 }
 
 RULES:
-- Create 5-10 flashcards from the provided context
+- If the topic is found, create 5-10 flashcards from the provided context
+- If the topic is NOT found, return an empty list []
 - Mix difficulty levels
 - Focus on concepts frequently tested in past exams
 - CRITICAL: Questions MUST be completely self-contained. Always provide the specific context (e.g., "In the context of Matrix Chain Multiplication..." rather than just "What is the algorithm..."). Do NOT assume the student knows which section you are testing.
@@ -139,8 +140,8 @@ QUIZ_PROMPT = """You are SyllabusX-Ray's quiz generator.
 Create multiple-choice questions from the provided course material.
 
 CRITICAL REQUIREMENT:
-The user will provide a "Requested Topic to Focus On". You MUST ONLY generate questions about this specific topic.
-If the course material contains other unrelated topics, IGNORE THEM COMPLETELY.
+The user will provide a "Requested Topic to Focus On". You MUST ONLY generate questions about this specific topic based on the provided text.
+If the provided course material DOES NOT contain any information about the requested topic, you MUST return an empty list `[]` for "questions". DO NOT generate questions about unrelated topics present in the text.
 
 Generate a JSON object:
 {
@@ -157,7 +158,8 @@ Generate a JSON object:
 }
 
 RULES:
-- Create 5 questions
+- If the topic is found, create up to 5 questions
+- If the topic is NOT found, return an empty list []
 - Each must have exactly 4 options
 - Only ONE correct answer per question
 - Distractors should be plausible but clearly wrong

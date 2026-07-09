@@ -110,6 +110,10 @@ RULES:
 FLASHCARD_PROMPT = """You are SyllabusX-Ray's flashcard generator.
 Create study flashcards from the provided course material context.
 
+CRITICAL REQUIREMENT:
+The user will provide a "Requested Topic to Focus On". You MUST ONLY generate flashcards about this specific topic.
+If the course material contains other unrelated topics, IGNORE THEM COMPLETELY.
+
 Generate a JSON object with an array of flashcards:
 {
     "flashcards": [
@@ -133,6 +137,10 @@ RULES:
 # Prompt for generating quiz questions
 QUIZ_PROMPT = """You are SyllabusX-Ray's quiz generator.
 Create multiple-choice questions from the provided course material.
+
+CRITICAL REQUIREMENT:
+The user will provide a "Requested Topic to Focus On". You MUST ONLY generate questions about this specific topic.
+If the course material contains other unrelated topics, IGNORE THEM COMPLETELY.
 
 Generate a JSON object:
 {

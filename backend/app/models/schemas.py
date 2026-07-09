@@ -73,6 +73,7 @@ class SearchQuery(BaseModel):
     detailed: bool = Field(default=False, description="Generate highly detailed, multi-paragraph explanations")
     top_k: int = Field(default=5, ge=1, le=20,
                        description="Number of final context chunks to use")
+    avoid_questions: Optional[list[str]] = Field(default_factory=list, description="List of previous questions to avoid repeating")
 
 
 class SchedulerRequest(BaseModel):

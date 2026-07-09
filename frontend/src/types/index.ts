@@ -78,6 +78,7 @@ export interface SearchQuery {
   mode?: StudyMode;
   detailed?: boolean;
   top_k?: number;
+  avoid_questions?: string[];
 }
 
 export interface SchedulerRequest {

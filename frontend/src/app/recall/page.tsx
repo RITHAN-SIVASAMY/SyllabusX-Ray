@@ -40,6 +40,10 @@ export default function RecallPage() {
   const [score, setScore] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
 
+  // History to prevent repeating questions
+  const [pastQuestions, setPastQuestions] = useState<string[]>([]);
+  const [pastFlashcards, setPastFlashcards] = useState<string[]>([]);
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.push('/');
   }, [authLoading, isAuthenticated, router]);
@@ -59,22 +63,38 @@ export default function RecallPage() {
           course_id: courseId,
           query: topic,
           mode,
+          avoid_questions: pastFlashcards,
         });
-        setCards(result.flashcards?.map((f: Omit<FlashCard, 'id'>, i: number) => ({ ...f, id: String(i) })) || []);
+        
+        const newCards = result.flashcards || [];
+        setCards(newCards.map((f: Omit<FlashCard, 'id'>, i: number) => ({ ...f, id: String(i) })));
         setCurrentCard(0);
         setFlipped(false);
+        
+        setPastFlashcards(prev => {
+          const updated = [...prev, ...newCards.map((f: any) => f.question)];
+          return updated.slice(-30);
+        });
       } else {
         const result = await generateQuiz({
           course_id: courseId,
           query: topic,
           mode,
+          avoid_questions: pastQuestions,
         });
-        setQuestions(result.questions?.map((q: Omit<QuizQuestion, 'id'>, i: number) => ({ ...q, id: String(i) })) || []);
+        
+        const newQs = result.questions || [];
+        setQuestions(newQs.map((q: Omit<QuizQuestion, 'id'>, i: number) => ({ ...q, id: String(i) })));
         setCurrentQ(0);
         setSelectedAnswer(null);
         setShowExplanation(false);
         setScore(0);
         setQuizComplete(false);
+        
+        setPastQuestions(prev => {
+          const updated = [...prev, ...newQs.map((q: any) => q.question)];
+          return updated.slice(-30);
+        });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed');

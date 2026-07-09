@@ -252,16 +252,21 @@ class LLMClient:
                 "error": str(e)
             }
 
-    async def generate_flashcards(self, context_chunks: list[dict]) -> dict:
+    async def generate_flashcards(self, context_chunks: list[dict], avoid_questions: Optional[list[str]] = None) -> dict:
         """Generate flashcards from context chunks."""
         client = self._get_client()
         context = self._format_context(context_chunks)
+
+        system_prompt = FLASHCARD_PROMPT
+        if avoid_questions:
+            avoid_list = "\n".join([f"- {q}" for q in avoid_questions])
+            system_prompt += f"\n\nCRITICAL RULE: Do NOT generate questions that are similar to the following previously generated questions:\n{avoid_list}"
 
         try:
             response = client.chat.completions.create(
                 model=self._settings.groq_model,
                 messages=[
-                    {"role": "system", "content": FLASHCARD_PROMPT},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"## Course material context:\n\n{context}"}
                 ],
                 response_format={"type": "json_object"},
@@ -275,16 +280,21 @@ class LLMClient:
             logger.error(f"Flashcard generation failed: {e}")
             return {"flashcards": [], "error": str(e)}
 
-    async def generate_quiz(self, context_chunks: list[dict]) -> dict:
+    async def generate_quiz(self, context_chunks: list[dict], avoid_questions: Optional[list[str]] = None) -> dict:
         """Generate quiz questions from context chunks."""
         client = self._get_client()
         context = self._format_context(context_chunks)
+
+        system_prompt = QUIZ_PROMPT
+        if avoid_questions:
+            avoid_list = "\n".join([f"- {q}" for q in avoid_questions])
+            system_prompt += f"\n\nCRITICAL RULE: Do NOT generate questions that are similar to the following previously generated questions:\n{avoid_list}"
 
         try:
             response = client.chat.completions.create(
                 model=self._settings.groq_model,
                 messages=[
-                    {"role": "system", "content": QUIZ_PROMPT},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"## Course material context:\n\n{context}"}
                 ],
                 response_format={"type": "json_object"},

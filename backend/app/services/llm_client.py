@@ -258,9 +258,11 @@ class LLMClient:
         context = self._format_context(context_chunks)
 
         system_prompt = FLASHCARD_PROMPT
+        temperature = 0.3
         if avoid_questions:
             avoid_list = "\n".join([f"- {q}" for q in avoid_questions])
-            system_prompt += f"\n\nCRITICAL RULE: Do NOT generate questions that are similar to the following previously generated questions:\n{avoid_list}"
+            system_prompt += f"\n\nCRITICAL INSTRUCTION: You MUST generate ENTIRELY DIFFERENT questions from the ones listed below. Compare your ideas against this forbidden list. If your proposed question is conceptually similar to any of these, DISCARD IT and test a different detail or concept from the text.\nForbidden questions:\n{avoid_list}"
+            temperature = 0.6  # Increase temperature to encourage variety
 
         try:
             response = client.chat.completions.create(
@@ -270,7 +272,7 @@ class LLMClient:
                     {"role": "user", "content": f"## Course material context:\n\n{context}"}
                 ],
                 response_format={"type": "json_object"},
-                temperature=0.3,
+                temperature=temperature,
                 max_tokens=2000
             )
 
@@ -286,9 +288,11 @@ class LLMClient:
         context = self._format_context(context_chunks)
 
         system_prompt = QUIZ_PROMPT
+        temperature = 0.3
         if avoid_questions:
             avoid_list = "\n".join([f"- {q}" for q in avoid_questions])
-            system_prompt += f"\n\nCRITICAL RULE: Do NOT generate questions that are similar to the following previously generated questions:\n{avoid_list}"
+            system_prompt += f"\n\nCRITICAL INSTRUCTION: You MUST generate ENTIRELY DIFFERENT questions from the ones listed below. Compare your ideas against this forbidden list. If your proposed question is conceptually similar to any of these, DISCARD IT and test a different detail or concept from the text.\nForbidden questions:\n{avoid_list}"
+            temperature = 0.6  # Increase temperature to encourage variety
 
         try:
             response = client.chat.completions.create(
@@ -298,7 +302,7 @@ class LLMClient:
                     {"role": "user", "content": f"## Course material context:\n\n{context}"}
                 ],
                 response_format={"type": "json_object"},
-                temperature=0.3,
+                temperature=temperature,
                 max_tokens=2000
             )
 

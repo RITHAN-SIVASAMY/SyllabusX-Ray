@@ -1,119 +1,81 @@
 # SyllabusX-Ray
 
-> **Production-grade Hybrid RAG exam preparation system.** Upload your syllabus & past year papers — get the 20% of topics that account for 80% of marks.
+SyllabusX-Ray is a full-stack AI-powered exam preparation platform. It allows students to upload their course syllabus and past year question papers (PYQs) as PDFs, extracting structured text and running deterministic analytics to identify the high-yield topics (the "80/20 rule"). It also provides a robust Hybrid RAG pipeline to answer academic questions, generate flashcards, quizzes, and personalized study schedules.
 
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Python](https://img.shields.io/badge/python-3.11+-green)
-![Next.js](https://img.shields.io/badge/next.js-15+-black)
+## Key Features
 
----
+- **Smart PDF Extraction:** Uses IBM's Docling (DocLayNet AI) to accurately extract multi-column academic papers, preserving tables, reading order, and heading hierarchies.
+- **Deterministic Analytics:** Calculates exact topic frequencies, mark distributions, and year-over-year trends using pure SQL aggregations—no LLM hallucinations.
+- **Hybrid RAG Search:** Combines semantic vector search (pgvector) and exact keyword search (PostgreSQL FTS), merged via Reciprocal Rank Fusion (RRF), and refined using a FlashRank cross-encoder.
+- **Adaptive Study Generation:** Generates concise cheatsheets, flashcard decks, and MCQ quizzes tailored to specific study modes (Deep Dive, Efficiency, Panic).
+- **Cram Countdown Planner:** Generates adaptive study schedules prioritizing topics proportional to their historical mark weightage.
+- **Peer Sharing:** Cryptographically secure, read-only share links allow students to share insights with peers.
 
-## 🧠 What This Does
+## Tech Stack
 
-Students upload their university syllabus and past year exam papers (PYQs). The system:
+**Frontend:**
+- Next.js 16 (App Router), React 19, TypeScript
+- Tailwind CSS v4, Framer Motion, Recharts
+- Supabase SSR Auth
 
-1. **Extracts** text from PDFs using IBM's Docling (preserves tables & multi-column layouts)
-2. **Indexes** content into a hybrid vector + keyword search engine (Supabase pgvector + tsvector)
-3. **Calculates** real mark frequency & weightage using deterministic SQL — no LLM guesswork
-4. **Generates** focused study guides via Groq's Llama 3.3 70B with FlashRank reranking
-5. **Adapts** the interface to three study modes: Deep Dive, 80/20 Efficiency, and Panic Mode
+**Backend:**
+- Python 3.11, FastAPI, Uvicorn
+- Supabase (PostgreSQL, pgvector, JWT auth)
+- IBM Docling (Layout AI extraction)
+- sentence-transformers (all-MiniLM-L6-v2) for embeddings
+- FlashRank (ms-marco-MiniLM-L-12-v2) for reranking
+- Groq API (Llama 3.3 70B) for generation
 
-## 🏗️ Architecture
+## Quick Start
 
-```
-frontend/   → Next.js 15 (App Router) + Shadcn UI + Framer Motion + Recharts
-backend/    → FastAPI + Docling + FlashRank + Groq API
-database    → Supabase (PostgreSQL + pgvector + Row-Level Security)
-```
-
-## 🚀 Quick Start
+The fastest way to run SyllabusX-Ray locally is via Docker Compose.
 
 ### Prerequisites
-- Node.js 20+
-- Python 3.11+
-- A [Supabase](https://supabase.com) project (free tier)
-- A [Groq](https://console.groq.com) API key (free tier)
+- Docker and Docker Compose
+- A Supabase project (URL, Anon Key, Service Role Key, JWT Secret)
+- A Groq API Key
 
-### 1. Clone & Install
+### Environment Setup
 
-```bash
-# Backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+1. **Backend Environment:**
+   Create `backend/.env` with your credentials:
+   ```env
+   GROQ_API_KEY=your_groq_api_key
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   SUPABASE_JWT_SECRET=your_jwt_secret
+   CORS_ORIGINS=http://localhost:3000
+   ```
 
-# Frontend
-cd ../frontend
-npm install
-```
+2. **Frontend Environment:**
+   Create `frontend/.env.local` with your credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   NEXT_PUBLIC_API_URL=http://localhost:8000
+   ```
 
-### 2. Configure Environment
+3. **Database Migration:**
+   Run the SQL script found in `backend/migrations/001_initial_schema.sql` in your Supabase SQL Editor to set up the tables, pgvector index, and Row-Level Security policies.
 
-```bash
-# Copy templates and fill in your keys
-cp backend/.env.example backend/.env
-cp frontend/.env.local.example frontend/.env.local
-```
-
-### 3. Run Database Migration
-
-Execute `backend/migrations/001_initial_schema.sql` in your Supabase SQL Editor.
-
-### 4. Start Development Servers
+### Run the Application
 
 ```bash
-# Terminal 1: Backend
-cd backend
-uvicorn app.main:app --reload --port 8000
-
-# Terminal 2: Frontend
-cd frontend
-npm run dev
+docker-compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+- **Frontend:** http://localhost:3000
+- **Backend API Docs:** http://localhost:8000/docs
 
-## 📁 Project Structure
+## Documentation
 
-```
-SyllabusX-Ray/
-├── frontend/           # Next.js 15 App Router
-│   ├── src/
-│   │   ├── app/        # Pages & routes
-│   │   ├── components/ # UI components
-│   │   ├── lib/        # Supabase clients, API wrappers
-│   │   ├── hooks/      # Custom React hooks
-│   │   └── types/      # TypeScript interfaces
-│   └── ...
-├── backend/            # FastAPI Python server
-│   ├── app/
-│   │   ├── auth/       # JWT verification, rate limiting
-│   │   ├── routers/    # API endpoints
-│   │   ├── services/   # Core business logic
-│   │   ├── models/     # Pydantic schemas, DB models
-│   │   └── utils/      # Text utilities, prompt guards
-│   ├── migrations/     # SQL migration scripts
-│   └── tests/          # Backend unit tests
-└── README.md
-```
+For an in-depth, interview-ready technical dive into every layer of the architecture, database schema, design decisions, and security model, please refer to the [Technical Documentation](DOCUMENTATION.md).
 
-## 🔒 Security
+## Security
 
-- **Auth**: Google OAuth via Supabase (PKCE flow)
-- **API**: JWT verification on every request
-- **Database**: Row-Level Security on all tables
-- **Rate Limiting**: slowapi throttling per endpoint
-- **Prompt Guards**: Regex-based injection detection
-
-## 💰 Cost
-
-**$0.** Everything runs on free tiers:
-- Vercel (frontend hosting)
-- Render / Hugging Face Spaces (backend hosting)
-- Supabase (database + auth)
-- Groq (LLM inference)
-
-## 📄 License
-
-MIT
+SyllabusX-Ray employs a multi-layered defense model:
+- **Authentication:** Local JWT verification for sub-millisecond validation.
+- **Database:** PostgreSQL Row-Level Security (RLS) restricts access at the engine level.
+- **Prompt Injection Defense:** Regex-based sanitization for PDFs and query rejection for malicious prompts.
+- **Rate Limiting:** IP-based throttling via SlowAPI.

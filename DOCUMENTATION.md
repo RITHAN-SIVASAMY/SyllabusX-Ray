@@ -47,6 +47,15 @@ SyllabusX-Ray is a **full-stack AI-powered exam preparation platform**. Students
 5. **Answers student questions** via a **Hybrid RAG pipeline**: vector search + keyword search → RRF fusion → FlashRank reranking → Groq LLM
 6. **Generates** flashcards, MCQ quizzes, cheatsheets, and study schedules personalized to topic importance
 
+### Tech Stack
+![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+
 ---
 
 ## 2. System Architecture

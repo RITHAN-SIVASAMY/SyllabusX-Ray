@@ -13,18 +13,24 @@ SyllabusX-Ray is a full-stack AI-powered exam preparation platform. It allows st
 
 ## Tech Stack
 
-**Frontend:**
-- Next.js 16 (App Router), React 19, TypeScript
-- Tailwind CSS v4, Framer Motion, Recharts
-- Supabase SSR Auth
+### Frontend
+![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 
-**Backend:**
-- Python 3.11, FastAPI, Uvicorn
-- Supabase (PostgreSQL, pgvector, JWT auth)
-- IBM Docling (Layout AI extraction)
-- sentence-transformers (all-MiniLM-L6-v2) for embeddings
-- FlashRank (ms-marco-MiniLM-L-12-v2) for reranking
-- Groq API (Llama 3.3 70B) for generation
+### Backend
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+
+### AI / Machine Learning
+- **IBM Docling**: Local DocLayNet AI for complex PDF multi-column extraction
+- **Groq API**: Llama 3.3 70B for ultra-fast generation
+- **HuggingFace (`sentence-transformers`)**: Local `all-MiniLM-L6-v2` for 384-dimensional semantic embeddings
+- **FlashRank**: Local `ms-marco-MiniLM-L-12-v2` for cross-encoder retrieval reranking
 
 ## Quick Start
 

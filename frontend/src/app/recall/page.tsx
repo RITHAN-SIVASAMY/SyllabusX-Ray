@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useStudyMode } from '@/hooks/useStudyMode';
@@ -15,7 +15,7 @@ import { generateFlashcards, generateQuiz } from '@/lib/api';
 import type { FlashCard, QuizQuestion } from '@/types';
 import CourseSelector from '@/components/CourseSelector';
 
-export default function RecallPage() {
+function RecallPageContent() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { mode, config, setMode } = useStudyMode();
   const router = useRouter();
@@ -360,5 +360,13 @@ export default function RecallPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function RecallPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 'var(--space-2xl)', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</div>}>
+      <RecallPageContent />
+    </Suspense>
   );
 }

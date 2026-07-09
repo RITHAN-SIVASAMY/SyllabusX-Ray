@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useStudyMode } from '@/hooks/useStudyMode';
@@ -26,7 +26,7 @@ const CHART_COLORS = [
   'hsl(220, 70%, 60%)',
 ];
 
-export default function AnalysisPage() {
+function AnalysisPageContent() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { mode } = useStudyMode();
   const router = useRouter();
@@ -315,5 +315,13 @@ export default function AnalysisPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function AnalysisPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 'var(--space-2xl)', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</div>}>
+      <AnalysisPageContent />
+    </Suspense>
   );
 }

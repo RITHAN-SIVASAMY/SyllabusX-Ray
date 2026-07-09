@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useStudyMode } from '@/hooks/useStudyMode';
@@ -25,7 +25,7 @@ interface QueryHistory {
   timestamp: number;
 }
 
-export default function AskPage() {
+function AskPageContent() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { mode, config, setMode } = useStudyMode();
   const router = useRouter();
@@ -546,5 +546,13 @@ export default function AskPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AskPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 'var(--space-2xl)', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</div>}>
+      <AskPageContent />
+    </Suspense>
   );
 }

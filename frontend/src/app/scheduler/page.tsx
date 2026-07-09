@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useStudyMode } from '@/hooks/useStudyMode';
@@ -26,7 +26,7 @@ interface ScheduleInfo {
   };
 }
 
-export default function SchedulerPage() {
+function SchedulerPageContent() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { mode, setMode, config } = useStudyMode();
   const router = useRouter();
@@ -254,5 +254,13 @@ export default function SchedulerPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function SchedulerPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 'var(--space-2xl)', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading...</div>}>
+      <SchedulerPageContent />
+    </Suspense>
   );
 }

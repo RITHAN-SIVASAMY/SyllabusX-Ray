@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useStudyMode } from '@/hooks/useStudyMode';
 import { listCourses, getCourseDocuments, deleteDocument, reanalyzeDocument } from '@/lib/api';
 import type { StudyMode } from '@/types';
+import UserProfile from '@/components/UserProfile';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
@@ -159,12 +160,7 @@ export default function DashboardPage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-            {user?.email}
-          </span>
-          <button className="btn-secondary" onClick={signOut} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}>
-            Sign Out
-          </button>
+          <UserProfile />
         </div>
       </header>
 

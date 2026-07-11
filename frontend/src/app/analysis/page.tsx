@@ -14,6 +14,7 @@ import { useStudyMode } from '@/hooks/useStudyMode';
 import { useAnalysis } from '@/hooks/useAnalysis';
 import { generateCheatsheet } from '@/lib/api';
 import CourseSelector from '@/components/CourseSelector';
+import UserProfile from '@/components/UserProfile';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   PieChart, Pie, Cell, ResponsiveContainer, Legend,
@@ -106,8 +107,9 @@ function AnalysisPageContent() {
       <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) var(--space-2xl)', borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)' }}>
         <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.25rem' }}>←</button>
         <h1 style={{ fontSize: '1.1rem', fontWeight: 600 }}>📊 Analysis Dashboard</h1>
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
           <CourseSelector />
+          <UserProfile />
         </div>
       </header>
 

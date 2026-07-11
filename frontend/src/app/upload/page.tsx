@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { uploadDocument, getProcessingStatus } from '@/lib/api';
 import type { FileType } from '@/types';
+import UserProfile from '@/components/UserProfile';
 
 export default function UploadPage() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -173,6 +174,9 @@ export default function UploadPage() {
       <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', padding: 'var(--space-md) var(--space-2xl)', borderBottom: '1px solid var(--border-subtle)', background: 'var(--bg-secondary)' }}>
         <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.25rem' }}>←</button>
         <h1 style={{ fontSize: '1.1rem', fontWeight: 600 }}>Upload Documents</h1>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+          <UserProfile />
+        </div>
       </header>
 
       <main style={{ maxWidth: '700px', margin: '0 auto', padding: 'var(--space-2xl)' }}>

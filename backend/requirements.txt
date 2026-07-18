@@ -2,6 +2,10 @@
 # SyllabusX-Ray Backend Dependencies
 # ==========================================
 
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.5.1
+torchvision==0.20.1
+
 # Core Framework
 fastapi==0.115.6
 uvicorn[standard]==0.34.0

@@ -97,9 +97,8 @@ class RerankerService:
         if not results:
             return []
 
-        self._load_ranker()
-
         try:
+            self._load_ranker()
             from flashrank import RerankRequest
 
             # Prepare passages in FlashRank's expected format

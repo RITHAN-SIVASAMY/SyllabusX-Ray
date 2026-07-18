@@ -59,7 +59,7 @@ def test_search_success(mock_llm, mock_reranker, mock_search, mock_supabase):
     
     response = client.post(
         "/api/search/",
-        json={"query": "What is testing?", "course_id": "valid_course", "mode": "explain"}
+        json={"query": "What is testing?", "course_id": "valid_course", "mode": "deep_dive"}
     )
     
     assert response.status_code == 200

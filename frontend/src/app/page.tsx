@@ -104,12 +104,12 @@ export default function LandingPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
           {isAuthenticated ? (
-            <button className="btn-primary" onClick={() => router.push('/dashboard')}>
+            <button className="btn-neo" onClick={() => router.push('/dashboard')}>
               Dashboard →
             </button>
           ) : (
             <button
-              className="btn-primary"
+              className="btn-neo"
               onClick={handleGetStarted}
               disabled={isSigningIn || loading}
             >
@@ -135,7 +135,7 @@ export default function LandingPage() {
       >
         {/* Badge */}
         <div
-          className="badge badge-primary animate-slide-in"
+          className="badge badge-primary neo-inset animate-slide-in"
           style={{ marginBottom: 'var(--space-lg)', padding: '0.35rem 1rem', fontSize: '0.8rem' }}
         >
           ⚡ Powered by Hybrid RAG + Deterministic SQL
@@ -196,7 +196,7 @@ export default function LandingPage() {
           style={{ display: 'flex', gap: 'var(--space-md)', flexWrap: 'wrap', justifyContent: 'center' }}
         >
           <button
-            className="btn-primary"
+            className="btn-neo"
             onClick={handleGetStarted}
             disabled={isSigningIn || loading}
             style={{ padding: 'var(--space-md) var(--space-2xl)', fontSize: '1rem' }}
@@ -209,8 +209,8 @@ export default function LandingPage() {
           </button>
           <a
             href="#features"
-            className="btn-secondary"
-            style={{ padding: 'var(--space-md) var(--space-2xl)', fontSize: '1rem' }}
+            className="btn-neo"
+            style={{ padding: 'var(--space-md) var(--space-2xl)', fontSize: '1rem', color: 'var(--text-primary)' }}
           >
             See How It Works ↓
           </a>
@@ -279,7 +279,7 @@ export default function LandingPage() {
           {FEATURES.map((feature, index) => (
             <div
               key={feature.title}
-              className="glass-card card-hover animate-slide-in"
+              className="neo-card animate-slide-in"
               style={{
                 padding: 'var(--space-xl)',
                 animationDelay: `${index * 100}ms`,
@@ -372,7 +372,7 @@ export default function LandingPage() {
                 {step.step}
               </div>
               <div
-                className="glass-card animate-slide-in"
+                className="neo-card animate-slide-in"
                 style={{
                   animationDelay: `${i * 150 + 50}ms`,
                   padding: 'var(--space-sm) var(--space-lg)',

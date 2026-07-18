@@ -14,6 +14,7 @@ import { useStudyMode } from '@/hooks/useStudyMode';
 import { searchCourseMaterials, listCourses } from '@/lib/api';
 import type { SearchResponse, SourceChunk } from '@/types';
 import CourseSelector from '@/components/CourseSelector';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const HISTORY_KEY = 'syllabusx-query-history';
 const MAX_HISTORY = 8;
@@ -231,7 +232,7 @@ function AskPageContent() {
             marginBottom: 'var(--space-xl)',
             fontSize: '0.82rem',
           }}>
-            <span style={{ color: modeColor, fontWeight: 700 }}>{config.icon} {config.label} Mode</span>
+            <span style={{ color: modeColor, fontWeight: 700 }}>{config.label} Mode</span>
             <span style={{ color: 'var(--text-secondary)' }}>—</span>
             <span style={{ color: 'var(--text-secondary)' }}>{config.description}</span>
           </div>
@@ -318,10 +319,10 @@ function AskPageContent() {
               {/* Main Answer */}
               <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)', borderLeft: `4px solid ${modeColor}` }}>
                 <div style={{ fontSize: '0.72rem', color: modeColor, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700, marginBottom: 'var(--space-md)' }}>
-                  {config.icon} {config.label} Answer
+                  {config.label} Answer
                 </div>
                 <div style={{ fontSize: '0.95rem', lineHeight: 1.8, color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
-                  {result.answer}
+                  <MarkdownRenderer content={result.answer} />
                 </div>
               </div>
 

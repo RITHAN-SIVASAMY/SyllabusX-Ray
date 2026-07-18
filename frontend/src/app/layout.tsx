@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Geist } from "next/font/google";
 import "./globals.css";
+import 'katex/dist/katex.min.css';
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
@@ -45,7 +46,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.setAttribute('data-theme', 'dark')
+                } else {
+                  document.documentElement.setAttribute('data-theme', 'light')
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
       <body className={`${inter.variable} ${jetbrainsMono.variable}`}>
         {children}
       </body>

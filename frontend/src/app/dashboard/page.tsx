@@ -16,6 +16,8 @@ import { useStudyMode } from '@/hooks/useStudyMode';
 import { listCourses, getCourseDocuments, deleteDocument, reanalyzeDocument } from '@/lib/api';
 import type { StudyMode } from '@/types';
 import UserProfile from '@/components/UserProfile';
+import ThemeToggle from '@/components/ThemeToggle';
+import { Microscope, Zap, AlertTriangle, FileText, BarChart2, Calendar, BrainCircuit, Bot, BookOpen, CheckCircle, File, RefreshCw, Trash2, ArrowRight } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, isAuthenticated, loading: authLoading, signOut } = useAuth();
@@ -134,10 +136,10 @@ export default function DashboardPage() {
     );
   }
 
-  const modes: { key: StudyMode; icon: string; label: string }[] = [
-    { key: 'deep_dive', icon: '🔬', label: 'Deep Dive' },
-    { key: 'efficiency', icon: '⚡', label: '80/20 Efficiency' },
-    { key: 'panic', icon: '🚨', label: 'Panic Mode' },
+  const modes: { key: StudyMode; icon: React.ReactNode; label: string }[] = [
+    { key: 'deep_dive', icon: <Microscope size={18} />, label: 'Deep Dive' },
+    { key: 'efficiency', icon: <Zap size={18} />, label: '80/20 Efficiency' },
+    { key: 'panic', icon: <AlertTriangle size={18} />, label: 'Panic Mode' },
   ];
 
   return (
@@ -154,12 +156,13 @@ export default function DashboardPage() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-          <span style={{ fontSize: '1.25rem' }}>🔬</span>
+          <Microscope size={24} className="text-primary" />
           <span style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--accent-primary)' }}>
             SyllabusX-Ray
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <ThemeToggle />
           <UserProfile />
         </div>
       </header>
@@ -189,7 +192,7 @@ export default function DashboardPage() {
             ))}
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: 'var(--space-sm)' }}>
-            {config.icon} {config.description}
+            {config.description}
           </p>
         </section>
 
@@ -197,7 +200,7 @@ export default function DashboardPage() {
         <section style={{ marginBottom: 'var(--space-2xl)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-md)' }}>
             <button
-              className="glass-card card-hover"
+              className="neo-card card-hover"
               onClick={() => router.push('/upload')}
               style={{
                 padding: 'var(--space-xl)',
@@ -207,7 +210,7 @@ export default function DashboardPage() {
                 background: 'var(--glass-bg)',
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: 'var(--space-sm)' }}>📄</div>
+              <div style={{ marginBottom: 'var(--space-sm)', color: 'var(--accent-primary)' }}><FileText size={32} /></div>
               <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Upload Documents</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                 Add syllabus or PYQ papers
@@ -215,7 +218,7 @@ export default function DashboardPage() {
             </button>
 
             <button
-              className="glass-card card-hover"
+              className="neo-card card-hover"
               onClick={() => courses.length > 0 && router.push(`/analysis?course=${courses[0]?.id}`)}
               style={{
                 padding: 'var(--space-xl)',
@@ -226,7 +229,7 @@ export default function DashboardPage() {
                 opacity: courses.length === 0 ? 0.5 : 1,
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: 'var(--space-sm)' }}>📊</div>
+              <div style={{ marginBottom: 'var(--space-sm)', color: 'var(--accent-primary)' }}><BarChart2 size={32} /></div>
               <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>View Analysis</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                 Topic frequencies & weightage
@@ -234,7 +237,7 @@ export default function DashboardPage() {
             </button>
 
             <button
-              className="glass-card card-hover"
+              className="neo-card card-hover"
               onClick={() => courses.length > 0 && router.push(`/scheduler?course=${courses[0]?.id}`)}
               style={{
                 padding: 'var(--space-xl)',
@@ -245,7 +248,7 @@ export default function DashboardPage() {
                 opacity: courses.length === 0 ? 0.5 : 1,
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: 'var(--space-sm)' }}>📅</div>
+              <div style={{ marginBottom: 'var(--space-sm)', color: 'var(--accent-primary)' }}><Calendar size={32} /></div>
               <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Cram Planner</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                 Generate adaptive schedule
@@ -253,7 +256,7 @@ export default function DashboardPage() {
             </button>
 
             <button
-              className="glass-card card-hover"
+              className="neo-card card-hover"
               onClick={() => courses.length > 0 && router.push(`/recall?course=${courses[0]?.id}`)}
               style={{
                 padding: 'var(--space-xl)',
@@ -264,7 +267,7 @@ export default function DashboardPage() {
                 opacity: courses.length === 0 ? 0.5 : 1,
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: 'var(--space-sm)' }}>🧠</div>
+              <div style={{ marginBottom: 'var(--space-sm)', color: 'var(--accent-primary)' }}><BrainCircuit size={32} /></div>
               <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Active Recall</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                 Flashcards & quizzes
@@ -272,7 +275,7 @@ export default function DashboardPage() {
             </button>
 
             <button
-              className="glass-card card-hover"
+              className="neo-card card-hover"
               onClick={() => courses.length > 0 && router.push(`/ask?course=${courses[0]?.id}`)}
               style={{
                 padding: 'var(--space-xl)',
@@ -284,7 +287,7 @@ export default function DashboardPage() {
                 borderLeft: `3px solid ${mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)'}`,
               }}
             >
-              <div style={{ fontSize: '2rem', marginBottom: 'var(--space-sm)' }}>🤖</div>
+              <div style={{ marginBottom: 'var(--space-sm)', color: 'var(--accent-primary)' }}><Bot size={32} /></div>
               <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Ask AI</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                 Query your documents
@@ -305,21 +308,21 @@ export default function DashboardPage() {
             </div>
           ) : courses.length === 0 ? (
             <div
-              className="glass-card"
+              className="neo-card"
               style={{
                 padding: 'var(--space-3xl)',
                 textAlign: 'center',
               }}
             >
-              <div style={{ fontSize: '3rem', marginBottom: 'var(--space-md)' }}>📚</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-md)', color: 'var(--text-tertiary)' }}><BookOpen size={48} /></div>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: 'var(--space-sm)' }}>
                 No courses yet
               </h3>
               <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--space-lg)' }}>
                 Upload your first syllabus or past year paper to get started.
               </p>
-              <button className="btn-primary" onClick={() => router.push('/upload')}>
-                📄 Upload Documents
+              <button className="btn-neo" onClick={() => router.push('/upload')}>
+                <FileText size={16} /> Upload Documents
               </button>
             </div>
           ) : (
@@ -327,7 +330,7 @@ export default function DashboardPage() {
               {courses.map((course) => (
                 <div key={course.id} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
                   <div
-                    className="glass-card card-hover"
+                    className="neo-card card-hover"
                     style={{
                       padding: 'var(--space-lg)',
                       display: 'flex',
@@ -344,12 +347,12 @@ export default function DashboardPage() {
                       <h3 style={{ fontWeight: 600, fontSize: '1.05rem' }}>{course.name}</h3>
                       <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-xs)', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                         {course.code && <span className="badge badge-primary">{course.code}</span>}
-                        <span>✅ {course.documents?.[0]?.count || 0} completed</span>
+                        <span><CheckCircle size={14} style={{display:'inline', marginRight:'4px'}} /> {course.documents?.[0]?.count || 0} completed</span>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center' }}>
                       <button 
-                        className="btn-secondary" 
+                        className="btn-neo" 
                         onClick={(e) => toggleCourseDocuments(course.id, e)}
                         style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
                       >
@@ -362,7 +365,7 @@ export default function DashboardPage() {
                   {/* Expanded Document Manager */}
                   {expandedCourseId === course.id && (
                     <div 
-                      className="glass-card animate-slide-in" 
+                      className="neo-card animate-slide-in" 
                       style={{ 
                         padding: 'var(--space-lg)', 
                         borderTopLeftRadius: 0, 
@@ -392,7 +395,7 @@ export default function DashboardPage() {
                             }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
                                 <span title={doc.file_type} style={{ fontSize: '1.2rem' }}>
-                                  {doc.file_type === 'syllabus' ? '📋' : '📝'}
+                                  {doc.file_type === 'syllabus' ? <File size={24} /> : <FileText size={24} />}
                                 </span>
                                 <div>
                                   <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>

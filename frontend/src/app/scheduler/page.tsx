@@ -114,7 +114,7 @@ function SchedulerPageContent() {
       <main style={{ maxWidth: '960px', margin: '0 auto', padding: 'var(--space-2xl)' }}>
         {/* Mode Explanation Banner */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-md)', padding: 'var(--space-lg)', background: modeColorBg, border: `1px solid ${modeColor}`, borderRadius: 'var(--radius-lg)', marginBottom: 'var(--space-2xl)' }}>
-          <span style={{ fontSize: '2rem' }}>{config.icon}</span>
+          
           <div>
             <div style={{ fontWeight: 700, color: modeColor, marginBottom: '4px' }}>{config.label} Schedule</div>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{config.description}</div>
@@ -150,7 +150,7 @@ function SchedulerPageContent() {
           {error && <div style={{ padding: 'var(--space-md)', background: 'hsla(0,60%,55%,0.1)', border: '1px solid var(--accent-danger)', borderRadius: 'var(--radius-md)', color: 'var(--accent-danger)', marginBottom: 'var(--space-md)', fontSize: '0.85rem' }}>{error}</div>}
 
           <button className="btn-primary" onClick={handleGenerate} disabled={!examDate || generating || !courseId} style={{ width: '100%', padding: 'var(--space-md)', fontSize: '1rem', background: modeColor, borderColor: modeColor }}>
-            {generating ? '⏳ Generating Schedule...' : `${config.icon} Generate ${config.label} Schedule`}
+            {generating ? 'Generating Schedule...' : `Generate ${config.label} Schedule`}
           </button>
         </div>
 

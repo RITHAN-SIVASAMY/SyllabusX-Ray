@@ -53,21 +53,18 @@ export function useStudyMode() {
       case 'deep_dive':
         return {
           label: 'Deep Dive',
-          icon: '🔬',
           description: 'Comprehensive study guides with full detail',
           accentClass: 'mode-deep-dive',
         };
       case 'efficiency':
         return {
           label: '80/20 Efficiency',
-          icon: '⚡',
           description: 'Only high-probability exam topics',
           accentClass: 'mode-efficiency',
         };
       case 'panic':
         return {
           label: 'Panic Mode',
-          icon: '🚨',
           description: 'Essential formulas & definitions only',
           accentClass: 'mode-panic',
         };

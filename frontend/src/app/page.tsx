@@ -12,7 +12,9 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { Microscope, LogIn, Target, Zap, Clock, ShieldCheck, FileText, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const FEATURES = [
   {
@@ -103,6 +105,7 @@ export default function LandingPage() {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+          <ThemeToggle />
           {isAuthenticated ? (
             <button className="btn-neo" onClick={() => router.push('/dashboard')}>
               Dashboard →

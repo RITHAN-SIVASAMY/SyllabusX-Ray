@@ -14,6 +14,7 @@ import { useStudyMode } from '@/hooks/useStudyMode';
 import { generateFlashcards, generateQuiz } from '@/lib/api';
 import type { FlashCard, QuizQuestion } from '@/types';
 import CourseSelector from '@/components/CourseSelector';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 function RecallPageContent() {
   const { isAuthenticated, loading: authLoading } = useAuth();
@@ -167,7 +168,7 @@ function RecallPageContent() {
       <main style={{ maxWidth: '800px', margin: '0 auto', padding: 'var(--space-2xl)' }}>
         {/* Mode guidance */}
         <div style={{ padding: 'var(--space-sm) var(--space-md)', background: mode === 'panic' ? 'hsla(0,60%,55%,0.08)' : mode === 'efficiency' ? 'hsla(40,80%,60%,0.08)' : 'hsla(200,80%,60%,0.08)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-xl)', fontSize: '0.82rem', color: 'var(--text-secondary)', border: `1px solid ${mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)'}` }}>
-          <span style={{ fontWeight: 700, color: mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)' }}>{config.icon} {config.label}:</span>{' '}
+          <span style={{ fontWeight: 700, color: mode === 'panic' ? 'var(--accent-danger)' : mode === 'efficiency' ? 'var(--accent-warning)' : 'var(--accent-primary)' }}>{config.label}:</span>{' '}
           {mode === 'panic' ? 'Flashcards and quizzes focus on the highest-priority exam topics from your past papers.' :
            mode === 'efficiency' ? 'Questions focus on high-yield topics — the 20% that covers 80% of exam marks.' :
            'Deep-dive flashcards cover all concepts with full explanations and cross-topic connections.'}
@@ -237,7 +238,7 @@ function RecallPageContent() {
                 {flipped ? '💡 Answer' : '❓ Question'} • Tap to flip
               </div>
               <div style={{ fontSize: '1.15rem', fontWeight: 500, lineHeight: 1.6, maxWidth: '500px' }}>
-                {flipped ? cards[currentCard].answer : cards[currentCard].question}
+                <MarkdownRenderer content={flipped ? cards[currentCard].answer : cards[currentCard].question} />
               </div>
               <div style={{ marginTop: 'var(--space-lg)' }}>
                 <span className={`badge ${cards[currentCard].difficulty === 'hard' ? 'badge-danger' : cards[currentCard].difficulty === 'medium' ? 'badge-warning' : 'badge-success'}`}>
@@ -269,7 +270,7 @@ function RecallPageContent() {
 
             <div className="glass-card" style={{ padding: 'var(--space-xl)', marginBottom: 'var(--space-lg)' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: 'var(--space-xl)', lineHeight: 1.5 }}>
-                {questions[currentQ].question}
+                <MarkdownRenderer content={questions[currentQ].question} />
               </h3>
 
               <div style={{ display: 'grid', gap: 'var(--space-sm)' }}>
@@ -309,7 +310,7 @@ function RecallPageContent() {
                       <span style={{ fontWeight: 600, marginRight: 'var(--space-sm)', color: 'var(--text-secondary)' }}>
                         {String.fromCharCode(65 + i)}.
                       </span>
-                      {option}
+                      <MarkdownRenderer content={option} />
                       {selectedAnswer !== null && isCorrect && ' ✅'}
                       {selectedAnswer !== null && isSelected && !isCorrect && ' ❌'}
                     </button>
@@ -327,7 +328,7 @@ function RecallPageContent() {
                   fontSize: '0.85rem',
                   lineHeight: 1.6,
                 }}>
-                  💡 {questions[currentQ].explanation}
+                  💡 <MarkdownRenderer content={questions[currentQ].explanation} />
                 </div>
               )}
             </div>

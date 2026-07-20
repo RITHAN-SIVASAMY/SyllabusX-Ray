@@ -8,27 +8,35 @@ Upload your course syllabus and past year question papers. SyllabusX-Ray extract
 
 ## Screenshots
 
-### 80/20 Pareto Analysis Dashboard
+### Main Dashboard
 
-![80/20 Pareto Analysis Dashboard](docs/images/dashboard_analysis.png)
+![Main Dashboard](docs/images/main_dashboard.png)
+
+Access all features from a centralized, neomorphic dashboard with quick navigation to document upload, analysis, study planners, and AI querying.
+
+### Upload Documents
+
+![Upload Documents](docs/images/upload_documents.png)
+
+Easily upload your course syllabus and past year question papers (PYQs). SyllabusX-Ray processes these to power the entire platform.
+
+### Analysis Dashboard (Charts)
+
+![Analysis Dashboard Charts](docs/images/analysis_dashboard.png)
 
 Deterministic SQL analytics compute exact topic frequencies, mark distributions, and year-over-year trends without any LLM involvement — eliminating hallucination risk entirely.
 
-### Hybrid RAG — Ask AI
+### Topic Frequency & 80/20 Checklist
 
-![Hybrid RAG Ask AI Interface](docs/images/ask_ai_interface.png)
+![Topic Frequency Table](docs/images/topic_frequency.png)
 
-The full RAG pipeline: query → hybrid search (pgvector + PostgreSQL FTS) → RRF fusion → FlashRank cross-encoder reranking → Groq Llama 3.3 70B generation. Three study modes — Deep Dive, Efficiency, and Panic — adjust the depth and format of responses.
+A detailed breakdown of topic weightage helps you focus on the 20% of topics that account for 80% of historical marks.
 
-### Flashcards and Recall
+### Cram Countdown Planner
 
-![Flashcards and Recall Interface](docs/images/flashcards.png)
+![Cram Countdown Planner](docs/images/cram_planner.png)
 
-Flashcard decks and MCQ quizzes are generated from your course materials via the RAG pipeline, prioritizing topics with the highest historical mark weightage.
-
-### System Architecture
-
-![System Architecture Diagram](docs/images/architecture.png)
+Generate adaptive study schedules prioritizing high-weightage topics based on the time you have left before the exam.
 
 ---
 

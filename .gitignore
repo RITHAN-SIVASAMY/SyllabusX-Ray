@@ -43,3 +43,11 @@ models_cache/
 
 # Logs
 *.log
+
+# Test/sample upload artifacts
+*.pptx
+*.docx
+test.*
+
+# Pipeline error logs
+pipeline_error_*.log

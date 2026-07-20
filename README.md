@@ -8,35 +8,78 @@ Upload your course syllabus and past year question papers. SyllabusX-Ray extract
 
 ## Screenshots
 
-### Main Dashboard
-
-![Main Dashboard](docs/images/main_dashboard.png)
-
-Access all features from a centralized, neomorphic dashboard with quick navigation to document upload, analysis, study planners, and AI querying.
-
-### Upload Documents
-
-![Upload Documents](docs/images/upload_documents.png)
-
-Easily upload your course syllabus and past year question papers (PYQs). SyllabusX-Ray processes these to power the entire platform.
-
-### Analysis Dashboard (Charts)
-
-![Analysis Dashboard Charts](docs/images/analysis_dashboard.png)
-
-Deterministic SQL analytics compute exact topic frequencies, mark distributions, and year-over-year trends without any LLM involvement — eliminating hallucination risk entirely.
-
-### Topic Frequency & 80/20 Checklist
-
-![Topic Frequency Table](docs/images/topic_frequency.png)
-
-A detailed breakdown of topic weightage helps you focus on the 20% of topics that account for 80% of historical marks.
-
-### Cram Countdown Planner
-
-![Cram Countdown Planner](docs/images/cram_planner.png)
-
-Generate adaptive study schedules prioritizing high-weightage topics based on the time you have left before the exam.
+<table>
+  <tr>
+    <td valign="top" width="50%">
+      <img src="assets/landing_page.png" alt="Landing Page">
+      <br>
+      <b>Landing Page</b><br>
+      A clean, modern landing page highlighting the core value proposition of SyllabusX-Ray.
+    </td>
+    <td valign="top" width="50%">
+      <img src="assets/main_dashboard.png" alt="Main Dashboard">
+      <br>
+      <b>Main Dashboard</b><br>
+      Centralized, neomorphic dashboard with quick navigation to all study tools and features.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" width="50%">
+      <img src="assets/upload_documents.png" alt="Upload Documents">
+      <br>
+      <b>Upload Documents</b><br>
+      Easily upload course syllabi and past year question papers (PYQs) for AI processing.
+    </td>
+    <td valign="top" width="50%">
+      <img src="assets/course_documents.png" alt="Course Documents">
+      <br>
+      <b>Course Documents Management</b><br>
+      Manage your uploaded files, track processing status, and view document details.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" width="50%">
+      <img src="assets/analysis_dashboard.png" alt="Analysis Dashboard Charts">
+      <br>
+      <b>Analysis Dashboard (Charts)</b><br>
+      Deterministic SQL analytics compute exact topic frequencies and mark distributions.
+    </td>
+    <td valign="top" width="50%">
+      <img src="assets/topic_frequency.png" alt="Topic Frequency Table">
+      <br>
+      <b>Topic Frequency & 80/20 Checklist</b><br>
+      Detailed breakdown of topic weightage to focus on the 20% that accounts for 80% of marks.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" width="50%">
+      <img src="assets/ask_ai_1.png" alt="Ask AI - Query">
+      <br>
+      <b>Hybrid RAG Ask AI</b><br>
+      Query your documents using semantic and keyword search, enriched with Llama 3.3 70B.
+    </td>
+    <td valign="top" width="50%">
+      <img src="assets/ask_ai_2.png" alt="Ask AI - Details">
+      <br>
+      <b>Ask AI Detailed Responses</b><br>
+      Get structured answers, key formulas, and must-know questions based on your specific curriculum.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" width="50%">
+      <img src="assets/active_recall.png" alt="Active Recall Arena">
+      <br>
+      <b>Active Recall Arena</b><br>
+      Generate AI-powered flashcards and quizzes directly from your course materials.
+    </td>
+    <td valign="top" width="50%">
+      <img src="assets/cram_planner.png" alt="Cram Countdown Planner">
+      <br>
+      <b>Cram Countdown Planner</b><br>
+      Adaptive study schedules prioritizing high-weightage topics based on remaining time.
+    </td>
+  </tr>
+</table>
 
 ---
 

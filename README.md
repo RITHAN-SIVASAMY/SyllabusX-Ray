@@ -53,21 +53,27 @@ Upload your course syllabus and past year question papers. SyllabusX-Ray extract
   </tr>
   <tr>
     <td valign="top" width="50%">
-      <img src="assets/ask_ai.png" alt="Hybrid RAG Ask AI">
+      <img src="assets/ask_ai_1.png" alt="Hybrid RAG Ask AI">
       <br>
       <b>Hybrid RAG Ask AI</b><br>
-      Query your documents to get structured answers, key formulas, and must-know questions.
+      Generate active recall questions and review key concepts directly from your documents.
     </td>
+    <td valign="top" width="50%">
+      <img src="assets/ask_ai_2.png" alt="Ask AI - Details">
+      <br>
+      <b>Ask AI Detailed Responses</b><br>
+      Get structured answers, key formulas, and must-know questions based on your specific curriculum.
+    </td>
+  </tr>
+  <tr>
     <td valign="top" width="50%">
       <img src="assets/active_recall.png" alt="Active Recall Arena">
       <br>
       <b>Active Recall Arena</b><br>
       Generate AI-powered flashcards and quizzes directly from your course materials.
     </td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center" valign="top">
-      <img src="assets/cram_planner.png" alt="Cram Countdown Planner" width="75%">
+    <td valign="top" width="50%">
+      <img src="assets/cram_planner.png" alt="Cram Countdown Planner">
       <br>
       <b>Cram Countdown Planner</b><br>
       Adaptive study schedules prioritizing high-weightage topics based on remaining time.

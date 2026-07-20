@@ -133,21 +133,24 @@ class PDFProcessor:
             # Fallback for PPTX/PDF if Docling doesn't extract page counts properly
             if page_count == 0:
                 file_path_str = str(file_path).lower()
+                logger.info(f"Page count is 0, attempting native fallback for: {file_path_str}")
                 if file_path_str.endswith('.pptx') or file_path_str.endswith('.ppt'):
                     try:
                         from pptx import Presentation
                         prs = Presentation(file_path)
                         page_count = len(prs.slides)
-                    except Exception:
-                        pass
+                        logger.info(f"PPTX native slide count: {page_count}")
+                    except Exception as e:
+                        logger.error(f"PPTX native slide count failed: {e}")
                 elif file_path_str.endswith('.pdf'):
                     try:
                         import PyPDF2
                         with open(file_path, 'rb') as f:
                             reader = PyPDF2.PdfReader(f)
                             page_count = len(reader.pages)
-                    except Exception:
-                        pass
+                        logger.info(f"PDF native page count: {page_count}")
+                    except Exception as e:
+                        logger.error(f"PDF native page count failed: {e}")
 
             logger.info(
                 f"Extraction complete: {page_count} pages, "
@@ -171,6 +174,7 @@ class PDFProcessor:
             except Exception:
                 pass
             # Fall back to basic extraction rather than failing completely
+            logger.info(f"Falling back to native extraction for: {file_path}")
             return await self._fallback_extract(file_path)
 
     def _extract_headings(self, markdown: str) -> list[str]:
@@ -246,7 +250,8 @@ class PDFProcessor:
                 "headings": self._extract_headings(markdown)
             }
         except Exception as e:
-            logger.error(f"Fallback extraction failed: {e}")
+            import traceback
+            logger.error(f"Fallback extraction failed: {e}\n{traceback.format_exc()}")
             return {
                 "markdown": "",
                 "tables": [],

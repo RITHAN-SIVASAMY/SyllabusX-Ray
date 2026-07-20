@@ -125,10 +125,29 @@ class PDFProcessor:
 
             # Count pages
             page_count = 0
-            if hasattr(result, 'pages'):
+            if hasattr(result, 'pages') and result.pages:
                 page_count = len(result.pages)
-            elif hasattr(doc, 'pages'):
+            elif hasattr(doc, 'pages') and doc.pages:
                 page_count = len(doc.pages)
+
+            # Fallback for PPTX/PDF if Docling doesn't extract page counts properly
+            if page_count == 0:
+                file_path_str = str(file_path).lower()
+                if file_path_str.endswith('.pptx') or file_path_str.endswith('.ppt'):
+                    try:
+                        from pptx import Presentation
+                        prs = Presentation(file_path)
+                        page_count = len(prs.slides)
+                    except Exception:
+                        pass
+                elif file_path_str.endswith('.pdf'):
+                    try:
+                        import PyPDF2
+                        with open(file_path, 'rb') as f:
+                            reader = PyPDF2.PdfReader(f)
+                            page_count = len(reader.pages)
+                    except Exception:
+                        pass
 
             logger.info(
                 f"Extraction complete: {page_count} pages, "

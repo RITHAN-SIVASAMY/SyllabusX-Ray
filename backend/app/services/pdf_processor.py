@@ -72,10 +72,10 @@ class PDFProcessor:
 
     async def process_file(self, file_path: str) -> dict:
         """
-        Extract structured text from a PDF file.
+        Extract structured text from a document file.
         
         Args:
-            file_path: Absolute path to the PDF file on disk
+            file_path: Absolute path to the file on disk
         
         Returns:
             {
@@ -86,10 +86,15 @@ class PDFProcessor:
             }
         
         HOW THE PIPELINE FLOWS:
-        file_path → Docling converter → DoclingDocument → Markdown export
-                                                        → Table extraction
-                                                        → Heading detection
+        For PDFs:  file_path → Docling converter → DoclingDocument → Markdown export
+        For PPTX/DOCX: file_path → Fallback extractor (python-pptx / python-docx)
         """
+        # Docling only supports PDF. Route other formats directly to fallback.
+        file_ext = Path(file_path).suffix.lower()
+        if file_ext != '.pdf':
+            logger.info(f"Non-PDF file ({file_ext}), using fallback extraction for: {Path(file_path).name}")
+            return await self._fallback_extract(file_path)
+
         if not self._available:
             return await self._fallback_extract(file_path)
 

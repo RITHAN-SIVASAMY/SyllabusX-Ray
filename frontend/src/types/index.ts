@@ -146,8 +146,6 @@ export interface ChunkMetadata {
 
 export interface AnalysisResponse {
   course_id: string;
-  course_name: string;
-  mode: StudyMode;
   total_topics: number;
   topics: TopicFrequency[];
 }
